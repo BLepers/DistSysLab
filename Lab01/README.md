@@ -75,7 +75,7 @@ A possible output is:
 ```
 
 ⚠️ The actual output may vary due to scheduling.  
-For instance, since `P0` does not wait for `P1`, it may reacquire the lock before `P1` manages to take it. Adding a `0 Wait 1` instruction before `0 Lock 1` would prevent this.
+For instance, since `P0` does not wait for `P1`, it may reacquire the lock before `P1` manages to take it. Adding a `0 Wait 1` instruction before the second `0 Lock 1` would prevent this.
 
 ## Language
 
