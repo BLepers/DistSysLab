@@ -66,5 +66,4 @@ When a process delivers a message, it prints:
   - **Fault tolerance**: Launch both algorithms with N=4, N=7, and N=10, and with various values of X in "BCAST 1 X". What is the minimum value of X to ensure that all non-faulty processes deliver the message?
   - **Byzantine tolerance**: Have the leader send different messages to different processes (i.e., "BCAST msg1 X; BCAST msg2 N-X"). Under which conditions do non-faulty process deliver different messages?
   - (Optional, but will give a significant bonus) Have malicious followers send different messages to different processes.
-    - At step 2 some malicious followers collude and agree to send [Echo,"HACK"] instead of the correct message. How many malicious followers can you tolerate before non-malicious processes deliver different messages?
-    - Have the leader send
+    - At step 2 some malicious followers collude and agree to send [Echo,100] instead of the correct message. How many malicious followers can you tolerate before non-malicious processes deliver 100 instead of the correct message?
