@@ -21,6 +21,7 @@ for (my $i = 0; $i < $num_processes; $i++) {
 	 if (!defined $pid) {
 		  die "Fork failed: $!";
 	 } elsif ($pid == 0) {
+		 $ENV{LD_PRELOAD} = "./hook.so";
 		 exec("./process", $i, $file) or die "Exec failed: $!";
 		 exit;
 	 }

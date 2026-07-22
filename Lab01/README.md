@@ -35,16 +35,17 @@ Each process has a queue totally ordered by LC and process ID (total order).
 
 - **N processes** are spawned and communicate via local sockets.
     - Each process has a unique ID in `[0, N-1]`.
-    - Each process is given the same test file to execute.
-    - The command line to launch a process is: `./process <id> <filename>`.
+    - Each process is given the same test file as input for simplicity, but only executes its own commands (see examples below).
+    - The command line to launch a process is: `./process <id> <test file>`.
 - **No local shared memory** is allowed (we simulate a distributed system).  
-- Processes wait for each other, and compete to execute the `./critical` application provided, following orders from an input file.
+- Processes wait for each other, and compete to execute the `./critical` application provided.
 
 The same input file is given to all spawned processes and has the following format:
 ```
 N # number of processes participating in the algorithm
 i Lock X # process i takes the lock and calls `./critical i X` to simulate a critical section lasting X seconds
 i Wait j # process i waits for j to release a lock before doing its next Lock instruction
+i Wait j # process i waits again for j to release a lock before doing its next Lock instruction
 ```
 
 ## Output Format
@@ -74,21 +75,33 @@ A possible output is:
 [Process 0] ...
 ```
 
-⚠️ The actual output may vary due to scheduling.  
-For instance, since `P0` does not wait for `P1`, it may reacquire the lock before `P1` manages to take it. Adding a `0 Wait 1` instruction before the second `0 Lock 1` would prevent this.
+⚠️ The actual output order may be different from the input order. In the previous example, P1 waits and then takes the lock before P0 reacquires it. Another valid output is P0 taking the lock twice before P1 acquires it.
+
+The following is also a valid input:
+```
+2
+0 Lock 1
+1 Wait 0
+1 Wait 0
+0 Lock 1
+1 Lock 1
+```
+
+In that case, P0 takes the lock twice before P1 takes the lock. Note that adding a third 'Wait' clause anywhere in the file should cause P1 to wait forever.
+ 
 
 ## Language
 
 No restriction on the programming language. However, prefer one with: easy socket manipulation and simple concurrency primitives. (You will likely need multiple receiver threads and at least one sender thread handling shared structures.)
 
+Regardless of the chosen programming language, your program MUST call the functions of hooks.c when accepting a connection, when connecting, and when sending or receiving data. If you use a programming language other than C, or an external library, make sure that it internally relies on `accept/connect/send/recv` to communicate with the outside world.
+
 ## Grading (Tentative)
-- **Minimal pass:** All provided examples must run and be correct.  
-- **OK mark (~13/20):** All tricky (not provided) test cases must run and be correct.  
-- **Excellent (16+):** Write a report including:
-  - **Performance:**  Measure maximum locks/second (without executing `./critical` and without printf to maximize performance and avoid external overheads).  
-  - **Analysis:**  Use [`perf`](https://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html) to generate a flamegraph. Where is the time spent? If you had to optimize, what would you do? (Open-ended, no need to implement).  
+- **Instant fail**: Git URL not provided on time, or code not accessible. Binary file committed (library or program). Code not compiling on a standard Linux distribution with basic dependencies intalled. Code not being able to be executed and checked automatically using `make check`. Modifying the `run.pl` or `hook.c` files in any way.
+- **Pass**: all provided tests pass and the application makes no assumption except the fact that TCP sockets are FIFO and failure free.
+- **Ok to good mark**: other tests (not provided) pass.
+- **Excellent**: Measure maximum locks/second (without executing `./critical` and without the hooks to maximize performance and avoid external overheads) and compare with a standard lock implementation over shared memory. Discuss your findings in a report (to include in PDF format in your repo).
 
 ## Notes
-- If using **TCP**, you may assume **FIFO message ordering**.  
-- In a real life scenario, the `./process` would run forever but, for this assignment, it must terminate once all Lock instructions have been executed by all parties (hint: count the number of release messages vs. the number of Lock instructions).
+- In a real life scenario, the `./process` would run forever but, for this assignment, it must terminate once all Lock instructions have been executed by all parties (hint: count the number of release messages received vs. the number of Lock instructions).
 
