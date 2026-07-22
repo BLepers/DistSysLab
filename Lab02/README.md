@@ -21,8 +21,8 @@ The Raft Broadcast Algorithm is a consensus algorithm designed to manage a repli
 ⚠️  In the actual Raft algorithm, the messages have an index and a term number, to ensure that they are inserted in the correct order in the log. Here, we ignore these details for simplicity.
 
 
-## Algorithm 2 - Bachar Broadcast Algorithm
-The Bachar Broadcast Algorithm is a reliable broadcast protocol that ensures that if a correct process broadcasts a message, then all correct processes will eventually deliver that message. It is designed to handle message loss and process failures in a distributed system.
+## Algorithm 2 - Bracha Broadcast Algorithm
+The Bracha Broadcast Algorithm is a reliable broadcast protocol that ensures that if a correct process broadcasts a message, then all correct processes will eventually deliver that message. It is designed to handle message loss and process failures in a distributed system.
 
 ### Pseudo code
 
@@ -60,10 +60,5 @@ When a process delivers a message, it prints:
 ```
 
 ## Grading (Tentative)
-- **Required (but not sufficient) to pass:** Both algorithms are implemented and deliver messages correctly in non-faulty cases.
-- Write a report discussing the following:
-  - **Performance**: Set N from N=4 to N=100 and measure the latency of both algorithms (time between Propose and Deliver on the leader). Plot the results and comment on the practicality of both algorithms. You can assume a non-faulty case in which the leader sends a single "BCAST 1 N" (i.e., a single broadcast to all processes).
-  - **Fault tolerance**: Launch both algorithms with N=4, N=7, and N=10, and with various values of X in "BCAST 1 X". What is the minimum value of X to ensure that all non-faulty processes deliver the message?
-  - **Byzantine tolerance**: Have the leader send different messages to different processes (i.e., "BCAST msg1 X; BCAST msg2 N-X"). Under which conditions do non-faulty process deliver different messages?
-  - (Optional, but will give a significant bonus) Have malicious followers send different messages to different processes.
-    - At step 2 some malicious followers collude and agree to send [Echo,100] instead of the correct message. How many malicious followers can you tolerate before non-malicious processes deliver 100 instead of the correct message?
+- **Required to pass:** Both algorithms are implemented and deliver messages correctly on the provided test cases. As in Lab01, the processes must use `connect/accept/recv/send` to communicate with each other. No modification of the `run.pl` and hooking library is allowed.
+- **Ok to excellent grade** Grade will depend on how fault-tolerant the implementation actually is.

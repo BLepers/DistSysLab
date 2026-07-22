@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-# Usage: ./run.pl ./test/testXX
+# Usage: env PROTOCOL="RAFT|BRACHA" ./run.pl ./test/testXX
 # Spawns multiple `./process <id> <file>` according to the first line of the test file
 
 # First input line is the number of `./process` to spawn
@@ -14,17 +14,21 @@ chomp($num_processes);
 # Spawn the processes and wait for them
 my @pids;
 for (my $i = 0; $i < $num_processes; $i++) {
-	 my $pid = fork();
-	 if (!defined $pid) {
-		  die "Fork failed: $!";
-	 } elsif ($pid == 0) {
-		 # Redirect stdout to log$i.txt, comment to debug
-		 close STDOUT;
-		 open (STDOUT, '>', "log$i.txt") or die "Can't redirect stdout: $!";
+    my $pid = fork();
+    if (!defined $pid) {
+        die "Fork failed: $!";
+    } elsif ($pid == 0) {
+        # Redirect stdout to log$i.txt, comment to debug
+        close STDOUT;
+        open(STDOUT, '>', "log$i.txt") or die "Can't redirect stdout: $!";
 
-		 # Execute the process for a maximum of 2 seconds
-		 exec("timeout", 2, "./process", $i, $file) or die "Exec failed: $!";
-	 }
+        $ENV{LD_PRELOAD} = "../Lab01/hook.so";
+
+        # Kill this process (and whatever it exec's into) after 5 seconds
+        alarm(5);
+
+        exec("./process", $i, $file) or die "Exec failed: $!";
+    }
 }
 1 while wait() >= 0;
 
