@@ -52,6 +52,10 @@ BCAST 2 Y # optional, process 0 sends value "2" to Y processes, starting from pr
 
 You can assume that a process only delivers a single message and then exits. The broadcasted value is always an integer.
 
+You can assume that process 0 is the leader of the broadcast. If that process malfunctions, the broadcast may not happen (even if all other processes are correct). Process 0 is included in N, and sends a message to itself (virtually).
+
+The protocol to use is determined by an environment variable (see scripts).
+
 ### Output
 
 When a process delivers a message, it prints:
